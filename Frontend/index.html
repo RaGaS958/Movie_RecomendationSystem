@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineMatrix — Movie Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  THREE.JS CANVAS BG                        -->
+<!-- ══════════════════════════════════════════ -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  TOAST CONTAINER                           -->
+<!-- ══════════════════════════════════════════ -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  NAV                                       -->
+<!-- ══════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#hero">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">CINE<em>MATRIX</em></span>
+    </a>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#trending" class="nav-link" data-section="trending">Trending</a></li>
+      <li><a href="#top-rated" class="nav-link" data-section="top-rated">Top Rated</a></li>
+      <li><a href="#discover" class="nav-link" data-section="discover">Discover</a></li>
+      <li><a href="#recommend" class="nav-link" data-section="recommend">AI Pick</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="nav-search-btn" id="open-search" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SEARCH OVERLAY                            -->
+<!-- ══════════════════════════════════════════ -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-overlay-inner">
+    <button class="search-close" id="close-search">✕</button>
+    <div class="search-box-wrap">
+      <svg class="search-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Search for any movie…" autocomplete="off" spellcheck="false" />
+    </div>
+    <div id="search-results" class="search-results-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  HERO                                      -->
+<!-- ══════════════════════════════════════════ -->
+<section id="hero" class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      <span>POWERED BY AI · TF-IDF ENGINE</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="ht-line">DISCOVER</span>
+      <span class="ht-line ht-gradient">YOUR NEXT</span>
+      <span class="ht-line">OBSESSION</span>
+    </h1>
+    <p class="hero-sub">35,000+ films. Instant recommendations. Zero guesswork.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" id="hero-explore-btn">
+        <span>Explore Now</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn-ghost" id="hero-ai-btn">
+        <span>AI Recommend</span>
+      </button>
+    </div>
+
+    <div class="hero-stats" id="hero-stats">
+      <div class="stat-pill"><span class="stat-val" id="stat-total">—</span><span class="stat-lbl">Movies</span></div>
+      <div class="stat-pill"><span class="stat-val" id="stat-rating">—</span><span class="stat-lbl">Avg Rating</span></div>
+      <div class="stat-pill"><span class="stat-val" id="stat-top">—</span><span class="stat-lbl">Top Rated</span></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  TRENDING                                  -->
+<!-- ══════════════════════════════════════════ -->
+<section id="trending" class="section">
+  <div class="section-header">
+    <div class="section-title-wrap">
+      <span class="section-tag">🔥 Live</span>
+      <h2 class="section-title">Trending Now</h2>
+    </div>
+    <div class="count-toggle">
+      <button class="toggle-btn active" data-count="5" data-target="trending">5</button>
+      <button class="toggle-btn" data-count="10" data-target="trending">10</button>
+      <button class="toggle-btn" data-count="20" data-target="trending">20</button>
+    </div>
+  </div>
+  <div class="movies-rail" id="trending-grid">
+    <div class="skeleton-row"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  TOP RATED                                 -->
+<!-- ══════════════════════════════════════════ -->
+<section id="top-rated" class="section">
+  <div class="section-header">
+    <div class="section-title-wrap">
+      <span class="section-tag">⭐ Best</span>
+      <h2 class="section-title">Top Rated</h2>
+    </div>
+    <div class="count-toggle">
+      <button class="toggle-btn active" data-count="5" data-target="top-rated">5</button>
+      <button class="toggle-btn" data-count="10" data-target="top-rated">10</button>
+      <button class="toggle-btn" data-count="20" data-target="top-rated">20</button>
+    </div>
+  </div>
+  <div class="movies-rail" id="top-rated-grid">
+    <div class="skeleton-row"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  DISCOVER (by genre)                       -->
+<!-- ══════════════════════════════════════════ -->
+<section id="discover" class="section">
+  <div class="section-header">
+    <div class="section-title-wrap">
+      <span class="section-tag">🎭 Genre</span>
+      <h2 class="section-title">Discover</h2>
+    </div>
+    <div class="count-toggle">
+      <button class="toggle-btn active" data-count="5" data-target="discover">5</button>
+      <button class="toggle-btn" data-count="10" data-target="discover">10</button>
+      <button class="toggle-btn" data-count="20" data-target="discover">20</button>
+    </div>
+  </div>
+  <div class="genre-pills" id="genre-pills"></div>
+  <div class="movies-rail" id="discover-grid">
+    <div class="skeleton-row"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  AI RECOMMEND                              -->
+<!-- ══════════════════════════════════════════ -->
+<section id="recommend" class="section">
+  <div class="section-header">
+    <div class="section-title-wrap">
+      <h2 class="section-title">AI Recommendations</h2>
+    </div>
+    <div class="count-toggle">
+      <button class="toggle-btn active" data-count="5" data-target="recommend">5</button>
+      <button class="toggle-btn" data-count="10" data-target="recommend">10</button>
+      <button class="toggle-btn" data-count="20" data-target="recommend">20</button>
+    </div>
+  </div>
+
+  <div class="ai-panel glass-panel">
+    <div class="ai-panel-header">
+      <div class="ai-icon-ring">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="19" cy="5" r="3"/></svg>
+      </div>
+      <div>
+        <h3>TF-IDF Cosine Engine</h3>
+        <p>Enter a movie title — we'll find what matches your taste</p>
+      </div>
+    </div>
+    <div class="ai-input-row">
+      <div class="ai-input-wrap">
+        <input type="text" id="rec-input" placeholder="e.g. Avatar, Inception, The Dark Knight…" autocomplete="off" />
+        <div class="ai-suggestions" id="ai-suggestions"></div>
+      </div>
+      <button class="btn-primary btn-ai-go" id="rec-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Recommend</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="rec-source" class="rec-source-card hidden"></div>
+  <div class="movies-rail" id="recommend-grid"></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  MOVIE MODAL                               -->
+<!-- ══════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal-box" id="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  FOOTER                                    -->
+<!-- ══════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">CINE<em>MATRIX</em></span>
+    </div>
+    <p class="footer-sub">Built with FastAPI · TF-IDF · Cosine Similarity · Three.js · GSAP</p>
+    <p class="footer-copy">Movie data from TMDB · Academic/personal use only</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
