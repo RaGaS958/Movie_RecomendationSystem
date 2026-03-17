@@ -3,7 +3,7 @@
    FastAPI · Three.js · GSAP · Framer-style
 ══════════════════════════════════════════ */
 
-const API = "http://localhost:8000";  // FastAPI server address
+const API = "https://movie-recomendationsystem.onrender.com";  // FastAPI server address
 
 /* ─────────────────────────────────────────
    STATE
